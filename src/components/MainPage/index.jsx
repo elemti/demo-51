@@ -341,7 +341,7 @@ const Banner = class extends React.Component {
     color: white;
     height: 40vw;
     min-height: 500px;
-    background: url(${background}) center center / cover no-repeat;
+    background: black url(${background}) center center / cover no-repeat;
     font-family: "Helvetica Neue Custom", "Helvetica Neue", Helvetica, Arial, sans-serif;
   `;
   Title = styled.div`
