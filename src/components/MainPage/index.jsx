@@ -2,9 +2,9 @@ import React from 'react';
 import styled from 'styled-components';
 import logo from './51ScrumLogo.png';
 import background from './background.jpg';
-import thumb1 from './thumb1.jpg';
-import thumb2 from './thumb2.jpg';
-import thumb3 from './thumb3.png';
+import { services, apps } from './services';
+
+const sleep = ms => new Promise(res => setTimeout(res, ms));
 
 const NavBar = styled.header`
   background-color: white;
@@ -74,11 +74,13 @@ const NavItem = styled.h4`
 
 const Section = class extends React.Component {
   Wrapper = styled.div`
-    padding: 40px 40px 0 40px;
+    padding-bottom: 20px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
 
-    &:last-child {
-      padding-bottom: 40px;
-    }
+    &:last-child { padding-bottom: 40px; }
+    &:first-child { padding-top: 40px; }
   `;
   InnerWrapper = styled.div`
     display: flex;
@@ -106,7 +108,12 @@ const Section = class extends React.Component {
     ${props => props.active && 'border-color: #8686ff;'}
 
     ${this.Item}:hover & {
-      border-color: #8686ff;
+      border-color: black;
+    }
+
+    @media (max-width: 1350px) {
+      width: 352px;
+      height: 198px;
     }
   `;
   ItemTitle = styled.div`
@@ -114,16 +121,26 @@ const Section = class extends React.Component {
     font-weight: bold;
     color: #065280;
   `;
-  PreviewWrapper = styled.div`
-    height: 0px;
-    ${props => props.expand && `height: 500px;`}
-    background: #222222;
-    margin: 0 -40px;
-    position: relative;
-    transition: height 0.3s ease-out;
-    overflow: hidden;
-    display: flex;
-  `;
+  Preview = {
+    Wrapper: styled.div`
+      height: 0px;
+      ${props => props.expand && `height: 500px;`}
+      position: relative;
+      transition: height 0.3s ease-out;
+      display: flex;
+      flex-direction: column;
+    `,
+    Body: styled.div`
+      align-self: center;
+      display: flex;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      width: 100vw;
+      background: #222222;
+      overflow: hidden;
+    `,
+  };
   ItemArrow = props => {
     const Wrapper = styled.div`
       height: 14px;
@@ -199,14 +216,13 @@ const Section = class extends React.Component {
   render() {
     const {
       props,
-      state,
       Wrapper,
       InnerWrapper,
       Title,
       Item,
       Image,
       ItemTitle,
-      PreviewWrapper,
+      Preview,
       ItemArrow,
       CloseBtn,
       VideoWrapper,
@@ -232,26 +248,28 @@ const Section = class extends React.Component {
             );
           })}
         </InnerWrapper>
-        <PreviewWrapper expand={!!previewingItem}>
-          {previewingItem && (
-            <React.Fragment>
-              <CloseBtn></CloseBtn>
-              <VideoWrapper>
-                <iframe
-                  title={previewingItem.id}
-                  src={previewingItem.videoUrl}
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                ></iframe>
-              </VideoWrapper>
-              <Desc.Wrapper>
-                <Desc.Title>{previewingItem.title}</Desc.Title>
-                <Desc.Subs>{previewingItem.desc}</Desc.Subs>
-              </Desc.Wrapper>
-            </React.Fragment>
-          )}
-        </PreviewWrapper>
+        <Preview.Wrapper expand={!!previewingItem}>
+          <Preview.Body>
+            {previewingItem && (
+              <React.Fragment>
+                <CloseBtn></CloseBtn>
+                <VideoWrapper>
+                  <iframe
+                    title={previewingItem.id}
+                    src={previewingItem.videoUrl}
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  ></iframe>
+                </VideoWrapper>
+                <Desc.Wrapper>
+                  <Desc.Title>{previewingItem.title}</Desc.Title>
+                  <Desc.Subs>{previewingItem.desc}</Desc.Subs>
+                </Desc.Wrapper>
+              </React.Fragment>
+            )}
+          </Preview.Body>
+        </Preview.Wrapper>
       </Wrapper>
     );
   };
@@ -300,7 +318,7 @@ const Footer = class extends React.Component {
         <this.Info.Wrapper>
           <this.Info.Title>About Us</this.Info.Title>
           <this.Info.Desc>
-            At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus. Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae.
+            At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio.
           </this.Info.Desc>
         </this.Info.Wrapper>
         <this.BottomBar>
@@ -314,33 +332,33 @@ const Footer = class extends React.Component {
   }
 };
 
-const Banner = props => {
-  const Wrapper = styled.div`
+const Banner = class extends React.Component {
+  Wrapper = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     color: white;
-    height: 42.857vw;
+    height: 40vw;
     min-height: 500px;
     background: url(${background}) center center / cover no-repeat;
     font-family: "Helvetica Neue Custom", "Helvetica Neue", Helvetica, Arial, sans-serif;
   `;
-  const Title = styled.div`
+  Title = styled.div`
     font-size: 40px;
     font-weight: bold;
     padding: 20px 0;
   `;
-  const SmallTitle = styled.div`
+  SmallTitle = styled.div`
     padding: 15px 0;
     font-size: 20px;
   `;
-  const ItemsWrapper = styled.div`
+  ItemsWrapper = styled.div`
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
   `;
-  const Item = styled.div`
+  Item = styled.div`
     padding: 10px 19px;
     font-size: 16px;
     border: 1px solid white;
@@ -348,29 +366,49 @@ const Banner = props => {
     margin: 5px 7px;
     cursor: pointer;
     color: white;
-
+    opacity: 0;
+    transition: opacity 1s ease-out;
     &:hover {
       background-color: rgba(255, 255, 255, 0.7);
       color: rgb(0, 0, 0);
     }
   `;
-  const items = props.items || [];
-  return (
-    <Wrapper>
-      <Title>51Scrum Portal</Title>
-      <SmallTitle>Our Services</SmallTitle>
-      <ItemsWrapper>
-        {items.map((item, i) => {
-          return (
-            <Item
-              key={item.id || `default-key-${i}`}
-              onClick={item.onClick}
-            >{item.name}</Item>
-          );
-        })}
-      </ItemsWrapper>
-    </Wrapper>
-  );
+  componentDidMount() {
+    Object.values(this.itemRefs).forEach(async (itemRef, i) => {
+      await sleep((i+4) * 180);
+      itemRef.current.style.opacity = 1;
+    });
+  }
+  itemRefs = {};
+  render() {
+    const {
+      props,
+      Wrapper,
+      Title,
+      SmallTitle,
+      ItemsWrapper,
+      Item,
+    } = this;
+    const items = props.items || [];
+    return (
+      <Wrapper>
+        <Title>51Scrum Portal</Title>
+        <SmallTitle>Our Services</SmallTitle>
+        <ItemsWrapper>
+          {items.map((item, i) => {
+            const itemRef = this.itemRefs[item.id] = React.createRef();
+            return (
+              <Item
+                ref={itemRef}
+                key={item.id}
+                onClick={item.onClick}
+              >{item.name}</Item>
+            );
+          })}
+        </ItemsWrapper>
+      </Wrapper>
+    );
+  }
 };
 
 const scrollIntoView = (el, opts = {}) => {
@@ -388,8 +426,12 @@ const Body = class extends React.Component {
     background: #f0f0f0;
     min-height: 500px;
     /*padding: 30px 0;*/
+    display: flex;
+    flex-direction: column;
   `;
-
+  SectionsWrapper = styled.div`
+    margin: 0 auto;
+  `;
   itemOnClick = item => {
     const { previewingItemId } = this.state;
     if (previewingItemId === item.id) {
@@ -404,61 +446,30 @@ const Body = class extends React.Component {
     return (
       <this.Wrapper>
         <Banner
-          items={[
-            {
-              name: 'Operation',
-              onClick: e => scrollIntoView(this.operationSection.current),
+          items={services.map(service => ({
+            ...service,
+            onClick: e => {
+              const ref = this[`section-ref-${service.id}`];
+              if (ref) scrollIntoView(ref.current);
             },
-            {
-              name: 'Test',
-              onClick: e => scrollIntoView(this.testSection.current),
-            },
-          ]}
+          }))}
         ></Banner>
-        <Section
-          title="51스크럼 운영 서비스"
-          _ref={this.operationSection}
-          itemOnClick={this.itemOnClick}
-          previewingItemId={this.state.previewingItemId}
-          items={[
-            {
-              id: 1,
-              title: 'CallMon',
-              desc: '현재 방송 상품의 상담원, ARS 콜, 모바일 주문 진입 고 객 수 제공',
-              videoUrl: 'https://www.youtube.com/embed/hA6hldpSTF8?autoplay=1',
-              imageUrl: thumb3,
-            },
-            {
-              id: 2,
-              title: 'SocialHits',
-              desc: '네이버 베스트 100 상품 크롤링, GS 검색어 데이터 제공',
-              videoUrl: 'https://www.youtube.com/embed/0LHxvxdRnYc?autoplay=1',
-              imageUrl: thumb3,
-            },
-          ]}
-        ></Section>
-        <Section
-          title="Test"
-          _ref={this.testSection}
-          itemOnClick={this.itemOnClick}
-          previewingItemId={this.state.previewingItemId}
-          items={[
-            {
-              id: 3,
-              title: 'BroadcastMon',
-              desc: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-              videoUrl: 'https://www.youtube.com/embed/tg52up16eq0?autoplay=1',
-              imageUrl: thumb3,
-            },
-            {
-              id: 4,
-              title: 'ProductMon',
-              desc: 'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem.',
-              videoUrl: 'https://www.youtube.com/embed/6ZfuNTqbHE8?autoplay=1',
-              imageUrl: thumb3,
-            },
-          ]}
-        ></Section>
+        <this.SectionsWrapper>
+          {services.map(service => {
+            const { id, name, appIds } = service;
+            const ref = this[`section-ref-${id}`] = React.createRef();
+            return (
+              <Section
+                key={id}
+                _ref={ref}
+                title={name}
+                itemOnClick={this.itemOnClick}
+                items={appIds.map(id => apps.find(app => app.id === id)).filter(x => x)}
+                previewingItemId={this.state.previewingItemId}
+              ></Section>
+            );
+          })}
+        </this.SectionsWrapper>
       </this.Wrapper>
     );
   }
